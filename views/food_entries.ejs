@@ -1,0 +1,168 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Food Entries - CICO Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+    <style>
+      @keyframes spin-slow {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes spin-medium {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      @keyframes spin-fast {
+        from { transform: rotate(0deg); }
+        to { transform: rotate(360deg); }
+      }
+      .spinner-slow {
+        animation: spin-slow 3s linear infinite;
+      }
+      .spinner-medium {
+        animation: spin-medium 1.5s linear infinite;
+      }
+      .spinner-fast {
+        animation: spin-fast 0.8s linear infinite;
+      }
+    </style>
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">🍽️ CICO Tracker</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/food-entries">Food Entries</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/food-entries/create">Add Food Entry</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/settings">Settings</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <!-- Total Calories Card -->
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="card shadow <%= totalCalories < targetCalories ? 'border-success' : totalCalories < limitCalories ? 'border-warning' : 'border-danger' %>">
+            <div class="card-body text-center">
+              <div class="d-flex justify-content-center align-items-center">
+                <div class="spinner-border <%= totalCalories < targetCalories ? 'text-success spinner-slow' : totalCalories < limitCalories ? 'text-warning spinner-medium' : 'text-danger spinner-fast' %>" 
+                     role="status" style="width: 3rem; height: 3rem;">
+                  <span class="visually-hidden">Loading...</span>
+                </div>
+                <h2 class="ms-3 mb-0">Total Calories: 
+                  <span class="<%= totalCalories < targetCalories ? 'text-success' : totalCalories < limitCalories ? 'text-warning' : 'text-danger' %>">
+                    <%= totalCalories %>
+                  </span> cal
+                </h2>
+              </div>
+              <% 
+                let statusMessage = '';
+                if (totalCalories < targetCalories) {
+                  statusMessage = '✅ Great! You\'re on track!';
+                } else if (totalCalories < limitCalories) {
+                  statusMessage = '⚠️ Moderate intake - watch your next meals!';
+                } else {
+                  statusMessage = '🔴 High calorie intake - consider exercise!';
+                }
+              %>
+              <p class="mt-2 mb-1"><%= statusMessage %></p>
+              <small class="text-muted">
+                Target: <%= targetCalories %> cal | Limit: <%= limitCalories %> cal
+                <a href="/settings" class="ms-2 text-decoration-none">⚙️ Edit</a>
+              </small>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <h1>Food Entries</h1>
+          <a href="/food-entries/create" class="btn btn-success">➕ Add New Entry</a>
+        </div>
+      </div>
+
+      <div class="row">
+        <div class="col-md-12">
+          <div class="table-responsive">
+            <table class="table table-striped table-hover">
+              <thead class="table-dark">
+                <tr>
+                  <th>Date & Time</th>
+                  <th>Name</th>
+                  <th>Calories</th>
+                  <th>Serving Size</th>
+                  <th>Meal</th>
+                  <th>Actions</th>
+                </tr>
+              </thead>
+              <tbody>
+                <% if (foodEntries.length === 0) { %>
+                <tr>
+                  <td colspan="6" class="text-center text-muted">
+                    <em>No food entries yet. Start tracking by adding your first meal!</em>
+                  </td>
+                </tr>
+                <% } else { %>
+                  <% for (let foodEntry of foodEntries) { 
+                    let mealName = 'N/A';
+                    switch(foodEntry.meal_id) {
+                      case 1: mealName = 'N/A'; break;
+                      case 2: mealName = 'Breakfast'; break;
+                      case 3: mealName = 'Lunch'; break;
+                      case 4: mealName = 'Dinner'; break;
+                      case 5: mealName = 'Snack'; break;
+                    }
+                  %>
+                  <tr>
+                    <td><%= new Date(foodEntry.dateTime).toLocaleString() %></td>
+                    <td><%= foodEntry.foodName %></td>
+                    <td><span class="badge bg-info"><%= foodEntry.calories %> cal</span></td>
+                    <td><%= foodEntry.servingSize %> <%= foodEntry.unit %></td>
+                    <td>
+                      <% if (mealName === 'Breakfast') { %>
+                        <span class="badge bg-warning text-dark">🌅 <%= mealName %></span>
+                      <% } else if (mealName === 'Lunch') { %>
+                        <span class="badge bg-primary">☀️ <%= mealName %></span>
+                      <% } else if (mealName === 'Dinner') { %>
+                        <span class="badge bg-dark">🌙 <%= mealName %></span>
+                      <% } else if (mealName === 'Snack') { %>
+                        <span class="badge bg-success">🍿 <%= mealName %></span>
+                      <% } else { %>
+                        <span class="badge bg-secondary"><%= mealName %></span>
+                      <% } %>
+                    </td>
+                    <td>
+                      <a href="/food-entries/edit/<%= foodEntry.id %>" class="btn btn-primary btn-sm">✏️ Edit</a>
+                      <a href="/food-entries/delete/<%= foodEntry.id %>" class="btn btn-danger btn-sm">🗑️ Delete</a>
+                    </td>
+                  </tr>
+                  <% } %>
+                <% } %>
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-JU8TZCqY6gIQqp6YkdPGywY5nF3KxR8B5vM6UlkF9ufl8eOr0d+L3lO4fzIz5B5A" crossorigin="anonymous"></script>
+  </body>
+</html>

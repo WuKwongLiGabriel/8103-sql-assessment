@@ -1,0 +1,131 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <title>Settings - CICO Tracker</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-sRIl4kxILFvY47J16cr9ZwB07vP4J8+LH7qKQnuqkuIAvNWLzeN8tE5YBujZqJLB" crossorigin="anonymous">
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
+      <div class="container-fluid">
+        <a class="navbar-brand" href="/">🍽️ CICO Tracker</a>
+        <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+          <span class="navbar-toggler-icon"></span>
+        </button>
+        <div class="collapse navbar-collapse" id="navbarNav">
+          <ul class="navbar-nav">
+            <li class="nav-item">
+              <a class="nav-link" href="/">Home</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/food-entries">Food Entries</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link" href="/food-entries/create">Add Food Entry</a>
+            </li>
+            <li class="nav-item">
+              <a class="nav-link active" aria-current="page" href="/settings">Settings</a>
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <div class="container mt-5">
+      <div class="row justify-content-center">
+        <div class="col-md-8">
+          <div class="card shadow-lg">
+            <div class="card-header bg-primary text-white">
+              <h3 class="mb-0">⚙️ Calorie Goal Settings</h3>
+            </div>
+            <div class="card-body p-5">
+              <p class="lead mb-4">Customize your daily calorie targets to match your health goals.</p>
+              
+              <form method="POST" action="/settings">
+                <div class="mb-4">
+                  <label for="targetCalories" class="form-label fs-5">
+                    <strong>🎯 Target Calories (Daily Goal)</strong>
+                  </label>
+                  <input 
+                    type="number" 
+                    class="form-control form-control-lg" 
+                    id="targetCalories" 
+                    name="targetCalories" 
+                    value="<%= targetCalories %>" 
+                    min="500"
+                    max="10000"
+                    required>
+                  <div class="form-text">
+                    This is your ideal daily calorie intake. The progress bar will show green when you're below this target.
+                  </div>
+                </div>
+
+                <div class="mb-4">
+                  <label for="limitCalories" class="form-label fs-5">
+                    <strong>🚨 Limit Calories (Maximum)</strong>
+                  </label>
+                  <input 
+                    type="number" 
+                    class="form-control form-control-lg" 
+                    id="limitCalories" 
+                    name="limitCalories" 
+                    value="<%= limitCalories %>" 
+                    min="500"
+                    max="10000"
+                    required>
+                  <div class="form-text">
+                    This is your maximum daily calorie limit. The indicator will turn red when you exceed this amount.
+                  </div>
+                </div>
+
+                <div class="alert alert-info">
+                  <h5>📊 Color Indicators:</h5>
+                  <ul class="mb-0">
+                    <li><span class="badge bg-success">Green</span> - Below target (great job!)</li>
+                    <li><span class="badge bg-warning text-dark">Yellow</span> - Between target and limit (watch out!)</li>
+                    <li><span class="badge bg-danger">Red</span> - Above limit (time to exercise!)</li>
+                  </ul>
+                </div>
+
+                <div class="d-grid gap-2 d-md-flex justify-content-md-between mt-4">
+                  <a href="/" class="btn btn-secondary btn-lg">← Cancel</a>
+                  <button type="submit" class="btn btn-primary btn-lg">💾 Save Settings</button>
+                </div>
+              </form>
+
+              <hr class="my-4">
+
+              <div class="card bg-light">
+                <div class="card-body">
+                  <h5 class="card-title">💡 Tips for Setting Your Goals</h5>
+                  <ul class="mb-0">
+                    <li><strong>Weight Loss:</strong> Set target 300-500 calories below your maintenance level</li>
+                    <li><strong>Weight Maintenance:</strong> Set target at your daily energy expenditure</li>
+                    <li><strong>Weight Gain:</strong> Set target 300-500 calories above your maintenance level</li>
+                    <li><strong>General Health:</strong> Most adults: 2000-2500 calories for maintenance</li>
+                  </ul>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.8/dist/js/bootstrap.bundle.min.js" integrity="sha384-JU8TZCqY6gIQqp6YkdPGywY5nF3KxR8B5vM6UlkF9ufl8eOr0d+L3lO4fzIz5B5A" crossorigin="anonymous"></script>
+    
+    <script>
+      // Validate that limit is greater than target
+      document.querySelector('form').addEventListener('submit', function(e) {
+        const target = parseInt(document.getElementById('targetCalories').value);
+        const limit = parseInt(document.getElementById('limitCalories').value);
+        
+        if (limit <= target) {
+          e.preventDefault();
+          alert('Limit calories must be greater than target calories!');
+        }
+      });
+    </script>
+  </body>
+</html>

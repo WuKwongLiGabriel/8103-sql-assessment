@@ -1,0 +1,153 @@
+<!-- Date & Time -->
+<div class="mb-4">
+  <label for="dateTime" class="form-label fs-5">
+    <strong>📅 Date & Time</strong>
+  </label>
+  <input 
+    type="datetime-local" 
+    class="form-control form-control-lg" 
+    id="dateTime"
+    name="dateTime" 
+    value="<%= foodEntry?.dateTime ? new Date(foodEntry.dateTime).toISOString().slice(0, 16) : '' %>" 
+    required
+  />
+  <div class="form-text">When did you eat this meal?</div>
+</div>
+
+<!-- Food Name -->
+<div class="mb-4">
+  <label for="foodName" class="form-label fs-5">
+    <strong>🍔 Food Name</strong>
+  </label>
+  <input 
+    type="text" 
+    class="form-control form-control-lg" 
+    id="foodName"
+    name="foodName" 
+    value="<%= foodEntry?.foodName || '' %>" 
+    placeholder="e.g., Chicken Rice, Nasi Lemak"
+    required
+  />
+  <div class="form-text">What did you eat?</div>
+</div>
+
+<!-- Calories -->
+<div class="mb-4">
+  <label for="calories" class="form-label fs-5">
+    <strong>🔥 Calories</strong>
+  </label>
+  <input 
+    type="number" 
+    class="form-control form-control-lg" 
+    id="calories"
+    name="calories" 
+    value="<%= foodEntry?.calories || '' %>" 
+    min="1"
+    placeholder="e.g., 500"
+    required
+  />
+  <div class="form-text">How many calories?</div>
+</div>
+
+<!-- Meal Type -->
+<div class="mb-4">
+  <label class="form-label fs-5">
+    <strong>🕐 Meal Type</strong>
+  </label>
+  <div class="form-text mb-3">What type of meal is this?</div>
+  <div class="btn-group-vertical w-100" role="group">
+    <% for (let m of meals) { %>
+      <input 
+        type="radio" 
+        class="btn-check" 
+        name="meal" 
+        id="meal<%= m.id %>" 
+        value="<%= m.id %>" 
+        <%= foodEntry?.meal_id == m.id ? "checked" : "" %>
+        autocomplete="off"
+        required
+      />
+      <label class="btn btn-outline-primary btn-lg text-start" for="meal<%= m.id %>">
+        <% if (m.name === 'Breakfast') { %>
+          🌅 <%= m.name %>
+        <% } else if (m.name === 'Lunch') { %>
+          ☀️ <%= m.name %>
+        <% } else if (m.name === 'Dinner') { %>
+          🌙 <%= m.name %>
+        <% } else if (m.name === 'Snack') { %>
+          🍿 <%= m.name %>
+        <% } else { %>
+          <%= m.name %>
+        <% } %>
+      </label>
+    <% } %>
+  </div>
+</div>
+
+<!-- Tags -->
+<div class="mb-4">
+  <label class="form-label fs-5">
+    <strong>🏷️ Tags (Optional)</strong>
+  </label>
+  <div class="form-text mb-3">Select all that apply</div>
+  <div class="row">
+    <% for (let t of tags) { %>
+      <div class="col-md-6 mb-2">
+        <div class="form-check">
+          <input 
+            class="form-check-input" 
+            type="checkbox" 
+            name="tags[]" 
+            value="<%= t.id %>" 
+            id="tag<%= t.id %>"
+            <%= relatedTags.includes(t.id) ? "checked" : "" %>
+          />
+          <label class="form-check-label" for="tag<%= t.id %>">
+            <%= t.name %>
+          </label>
+        </div>
+      </div>
+    <% } %>
+  </div>
+</div>
+
+<!-- Serving Size & Unit -->
+<div class="mb-4">
+  <label class="form-label fs-5">
+    <strong>📏 Serving Size & Unit</strong>
+  </label>
+  <div class="form-text mb-3">How much did you eat?</div>
+  <div class="row g-3">
+    <div class="col-md-4">
+      <input 
+        type="number" 
+        class="form-control form-control-lg" 
+        name="servingSize" 
+        value="<%= foodEntry?.servingSize || '' %>" 
+        min="0.1"
+        step="0.1"
+        placeholder="1"
+        required
+      />
+    </div>
+    <div class="col-md-8">
+      <select class="form-select form-select-lg" name="unit" required>
+        <option value="">-- Select Unit --</option>
+        <option value="serving" <%= foodEntry?.unit == "serving" ? "selected" : "" %>>Serving</option>
+        <option value="plate" <%= foodEntry?.unit == "plate" ? "selected" : "" %>>Plate</option>
+        <option value="bowl" <%= foodEntry?.unit == "bowl" ? "selected" : "" %>>Bowl</option>
+        <option value="cup" <%= foodEntry?.unit == "cup" ? "selected" : "" %>>Cup</option>
+        <option value="piece" <%= foodEntry?.unit == "piece" ? "selected" : "" %>>Piece</option>
+        <option value="pieces" <%= foodEntry?.unit == "pieces" ? "selected" : "" %>>Pieces</option>
+        <option value="slice" <%= foodEntry?.unit == "slice" ? "selected" : "" %>>Slice</option>
+        <option value="slices" <%= foodEntry?.unit == "slices" ? "selected" : "" %>>Slices</option>
+        <option value="gram" <%= foodEntry?.unit == "gram" ? "selected" : "" %>>Gram (g)</option>
+        <option value="ounce" <%= foodEntry?.unit == "ounce" ? "selected" : "" %>>Ounce (oz)</option>
+        <option value="pound" <%= foodEntry?.unit == "pound" ? "selected" : "" %>>Pound (lb)</option>
+        <option value="stick" <%= foodEntry?.unit == "stick" ? "selected" : "" %>>Stick</option>
+        <option value="sticks" <%= foodEntry?.unit == "sticks" ? "selected" : "" %>>Sticks</option>
+        <option value="toast" <%= foodEntry?.unit == "toast" ? "selected" : "" %>>Toast</option>
+      </select>
+    </div>
+  </div>
+</div>
