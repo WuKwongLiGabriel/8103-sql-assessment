@@ -14,3 +14,15 @@ https://www.healthline.com/health/what-exercise-burns-the-most-calories#calorie-
 
 ## That spinning thing from bootstrap
 https://getbootstrap.com/docs/5.3/components/spinners/
+
+## The search using bootstrap Datalists 
+https://getbootstrap.com/docs/5.3/forms/form-control/
+
+## At home.ejs the popping effect is done by
+/* Lines 30-35 in home.ejs
+.calorie-card {
+  transition: all 0.3s ease;
+}
+.calorie-card:hover {
+  transform: scale(1.05);
+}

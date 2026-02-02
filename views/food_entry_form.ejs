@@ -56,7 +56,7 @@
   </label>
   <div class="form-text mb-3">What type of meal is this?</div>
   <div class="btn-group-vertical w-100" role="group">
-    <% for (let m of meals) { %>
+    <% for (let m of meals) { if (m.name !== 'N/A') { %>
       <input 
         type="radio" 
         class="btn-check" 
@@ -80,7 +80,7 @@
           <%= m.name %>
         <% } %>
       </label>
-    <% } %>
+    <% } } %>
   </div>
 </div>
 

@@ -92,6 +92,121 @@
         </div>
       </div>
 
+      <!-- Search/Filter Section -->
+      <div class="row mb-4">
+        <div class="col-md-12">
+          <div class="card shadow">
+            <div class="card-header bg-info text-white">
+              <h4 class="mb-0">🔍 Search & Filter Food Entries</h4>
+            </div>
+            <div class="card-body">
+              <form method="GET" action="/food-entries">
+                <div class="row g-3">
+                  <!-- Food Name Search with Datalist -->
+                  <div class="col-md-6">
+                    <label for="searchFood" class="form-label"><strong>🍔 Food Name</strong></label>
+                    <input 
+                      class="form-control" 
+                      list="foodOptions" 
+                      id="searchFood" 
+                      name="searchFood"
+                      placeholder="Type to search foods..."
+                      value="<%= searchFood %>">
+                    <datalist id="foodOptions">
+                      <% allFoods.forEach(function(food) { %>
+                        <option value="<%= food.foodName %>">
+                      <% }); %>
+                    </datalist>
+                    <div class="form-text">Start typing to see suggestions</div>
+                  </div>
+
+                  <!-- Meal Type Filter -->
+                  <div class="col-md-6">
+                    <label for="searchMeal" class="form-label"><strong>🕐 Meal Type</strong></label>
+                    <select class="form-select" id="searchMeal" name="searchMeal">
+                      <option value="">All Meals</option>
+                      <% meals.forEach(function(meal) { %>
+                        <option value="<%= meal.id %>" <%= searchMeal == meal.id ? 'selected' : '' %>>
+                          <% if (meal.name === 'Breakfast') { %>
+                            🌅 <%= meal.name %>
+                          <% } else if (meal.name === 'Lunch') { %>
+                            ☀️ <%= meal.name %>
+                          <% } else if (meal.name === 'Dinner') { %>
+                            🌙 <%= meal.name %>
+                          <% } else if (meal.name === 'Snack') { %>
+                            🍿 <%= meal.name %>
+                          <% } else { %>
+                            <%= meal.name %>
+                          <% } %>
+                        </option>
+                      <% }); %>
+                    </select>
+                    <div class="form-text">Filter by meal type</div>
+                  </div>
+
+                  <!-- Min Calories -->
+                  <div class="col-md-6">
+                    <label for="minCalories" class="form-label"><strong>🔥 Min Calories</strong></label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      id="minCalories" 
+                      name="minCalories"
+                      placeholder="e.g., 100"
+                      value="<%= minCalories %>"
+                      min="0">
+                    <div class="form-text">Minimum calorie amount</div>
+                  </div>
+
+                  <!-- Max Calories -->
+                  <div class="col-md-6">
+                    <label for="maxCalories" class="form-label"><strong>🔥 Max Calories</strong></label>
+                    <input 
+                      type="number" 
+                      class="form-control" 
+                      id="maxCalories" 
+                      name="maxCalories"
+                      placeholder="e.g., 1000"
+                      value="<%= maxCalories %>"
+                      min="0">
+                    <div class="form-text">Maximum calorie amount</div>
+                  </div>
+                </div>
+
+                <!-- Search Buttons -->
+                <div class="d-grid gap-2 d-md-flex justify-content-md-end mt-4">
+                  <a href="/food-entries" class="btn btn-secondary">🔄 Clear Filters</a>
+                  <button type="submit" class="btn btn-info text-white">🔍 Search</button>
+                </div>
+              </form>
+
+              <!-- Active Filters Display -->
+              <% if (searchFood || searchMeal || minCalories || maxCalories) { %>
+                <div class="alert alert-info mt-3 mb-0">
+                  <strong>🎯 Active Filters:</strong>
+                  <div class="mt-2">
+                    <% if (searchFood) { %>
+                      <span class="badge bg-primary me-2">Food: <%= searchFood %></span>
+                    <% } %>
+                    <% if (searchMeal) { %>
+                      <% const selectedMeal = meals.find(m => m.id == searchMeal); %>
+                      <span class="badge bg-primary me-2">Meal: <%= selectedMeal ? selectedMeal.name : searchMeal %></span>
+                    <% } %>
+                    <% if (minCalories) { %>
+                      <span class="badge bg-primary me-2">Min Cal: <%= minCalories %></span>
+                    <% } %>
+                    <% if (maxCalories) { %>
+                      <span class="badge bg-primary me-2">Max Cal: <%= maxCalories %></span>
+                    <% } %>
+                  </div>
+                  <small class="text-muted d-block mt-2">Showing <%= foodEntries.length %> result(s)</small>
+                </div>
+              <% } %>
+            </div>
+          </div>
+        </div>
+      </div>
+
       <div class="row mb-4">
         <div class="col-md-12">
           <h1>Food Entries</h1>
@@ -117,7 +232,11 @@
                 <% if (foodEntries.length === 0) { %>
                 <tr>
                   <td colspan="6" class="text-center text-muted">
-                    <em>No food entries yet. Start tracking by adding your first meal!</em>
+                    <% if (searchFood || searchMeal || minCalories || maxCalories) { %>
+                      <em>No food entries found matching your search criteria. Try different filters!</em>
+                    <% } else { %>
+                      <em>No food entries yet. Start tracking by adding your first meal!</em>
+                    <% } %>
                   </td>
                 </tr>
                 <% } else { %>

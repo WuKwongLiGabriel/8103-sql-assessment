@@ -128,24 +128,85 @@ app.post('/settings', async function(req, res) {
 });
 
 app.get('/food-entries', async function (req, res) {
-    const sql = 'SELECT * FROM food_entries ORDER BY dateTime DESC'
-    const results = await dbConnection.query(sql);
-    const rows = results[0];
+    try {
+        // Get search parameters
+        const searchFood = req.query.searchFood || '';
+        const searchMeal = req.query.searchMeal || '';
+        const minCalories = req.query.minCalories || '';
+        const maxCalories = req.query.maxCalories || '';
 
-    // Calculate total calories
-    const totalCalories = rows.reduce((sum, entry) => sum + entry.calories, 0);
-    
-    // Get settings
-    const settings = await getSettings();
+        // Build dynamic SQL query
+        let sql = 'SELECT * FROM food_entries WHERE 1=1';
+        let params = [];
 
-    res.render('food_entries', {
-        foodEntries: rows,
-        totalCalories: totalCalories,
-        targetCalories: settings.targetCalories,
-        limitCalories: settings.limitCalories
-    })
+        // Add food name filter
+        if (searchFood) {
+            sql += ' AND foodName LIKE ?';
+            params.push(`%${searchFood}%`);
+        }
 
-})
+        // Add meal type filter
+        if (searchMeal && searchMeal !== '') {
+            sql += ' AND meal_id = ?';
+            params.push(searchMeal);
+        }
+
+        // Add calorie range filters
+        if (minCalories) {
+            sql += ' AND calories >= ?';
+            params.push(minCalories);
+        }
+
+        if (maxCalories) {
+            sql += ' AND calories <= ?';
+            params.push(maxCalories);
+        }
+
+        sql += ' ORDER BY dateTime DESC';
+
+        // Execute query
+        const [rows] = await dbConnection.execute(sql, params);
+
+        // Calculate total calories
+        const totalCalories = rows.reduce((sum, entry) => sum + entry.calories, 0);
+
+        // Get settings
+        const settings = await getSettings();
+
+        // Get all meals for the filter dropdown
+        const [meals] = await dbConnection.query("SELECT * FROM meals");
+
+        // Get all unique food names for datalist
+        const [allFoods] = await dbConnection.query("SELECT DISTINCT foodName FROM food_entries ORDER BY foodName");
+
+        res.render('food_entries', {
+            foodEntries: rows,
+            totalCalories: totalCalories,
+            targetCalories: settings.targetCalories,
+            limitCalories: settings.limitCalories,
+            meals: meals,
+            allFoods: allFoods,
+            searchFood: searchFood,
+            searchMeal: searchMeal,
+            minCalories: minCalories,
+            maxCalories: maxCalories
+        });
+    } catch (error) {
+        console.error(error);
+        res.render('food_entries', {
+            foodEntries: [],
+            totalCalories: 0,
+            targetCalories: 2000,
+            limitCalories: 2500,
+            meals: [],
+            allFoods: [],
+            searchFood: '',
+            searchMeal: '',
+            minCalories: '',
+            maxCalories: ''
+        });
+    }
+});
 
 // display the form
 app.get("/food-entries/create", async function (req, res) {
